@@ -1,8 +1,8 @@
 # ProvGuard Lab — SDN Control-Plane Attacks & Provenance-Based Detection
 
-A small, reproducible software-defined networking (SDN) lab that stages two control-plane attacks and detects them. Built to work hands-on with the ideas in Prof. Mao Jian's ProvGuard research on SDN provenance graphs, as preparation for postgraduate study.
+A small, reproducible software-defined networking (SDN) lab that stages two control-plane attacks and detects them. Built to work hands-on with the ideas in the ProvGuard paper (Liu, Mao et al., NDSS 2025) on detecting SDN control-policy manipulation via provenance graphs.
 
-Citation (to fill in): Mao J. et al., ProvGuard: ..., <venue>, <year>.
+Citation: Z. Liu, J. Mao, J. Zeng, J. Li, Q. Lin, J. Liu, J. Zhuge, and Z. Liang, "ProvGuard: Detecting SDN Control Policy Manipulation via Contextual Semantics of Provenance Graphs," in Proc. Network and Distributed System Security Symposium (NDSS), 2025.
 
 ## Why this lab exists
 
@@ -47,4 +47,5 @@ detector/detector.py inspects control-plane state and flags the anomalies produc
 - Lab built as independent study toward an SDN-security master's application.
 - Evidence files are the raw captures from live runs on the VM.
 
+Author : Mohammed Usman Rafique
 
