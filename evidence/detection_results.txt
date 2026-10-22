@@ -1,0 +1,2 @@
+Attack B detected Thu 22 Oct 2026 01:12:14 PM PDT: LINK FABRICATION on s1 port 2 (h3 host port became a link endpoint)
+Attack A detected Thu 22 Oct 2026 01:32:56 PM PDT: ACL BYPASS - h1 moved s1->s2, DENY active, no drop flow at new switch

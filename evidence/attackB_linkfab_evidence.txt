@@ -1,0 +1,4 @@
+=== Fabricated link (s1<->s2) ===
+[{"src-switch":"00:00:00:00:00:00:00:01","src-port":2,"dst-switch":"00:00:00:00:00:00:00:02","dst-port":2,"type":"internal","direction":"bidirectional"}]
+=== Attacker h3 location (same ports as the 'link') ===
+[]

@@ -1,0 +1,7 @@
+=== ACL rule (still DENY) ===
+[{"id":1,"nw_src":"10.0.0.1/32","nw_dst":"10.0.0.2/32","nw_src_prefix":167772161,"nw_src_maskbits":32,"nw_dst_prefix":167772162,"nw_dst_maskbits":32,"nw_proto":0,"tp_dst":0,"action":"DENY"}]
+=== s2 flows (allowing h1->h2, no drop) ===
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=636.030s, table=0, n_packets=90, n_bytes=7141, priority=0 actions=CONTROLLER:65535
+=== h1 location (now on s2) ===
+[{"entityClass":"DefaultEntityClass","mac":["00:00:00:00:00:01"],"ipv4":["10.0.0.1"],"ipv6":["fe80::200:ff:fe00:1"],"vlan":["0x0"],"attachmentPoint":[{"switchDPID":"00:00:00:00:00:00:00:02","port":3,"errorStatus":null}],"lastSeen":1792678324436}]
