@@ -2,6 +2,14 @@
 
 A small, reproducible software-defined networking (SDN) lab that stages two control-plane attacks and detects them. Built to work hands-on with the ideas in the ProvGuard paper (Liu, Mao et al., NDSS 2025) on detecting SDN control-policy manipulation via provenance graphs.
 
+## Result at a glance
+
+Both attacks were reproduced in an isolated VM and flagged by the detector:
+- Attack A (ACL bypass via host migration): detected, 22 Oct 2026
+- Attack B (link fabrication): detected, 22 Oct 2026
+
+Raw captures and detector output are in `evidence/`. The detector is rule-based and does not build provenance graphs yet (see Known limitations). A provenance logger and graph is the next stage.
+
 Citation: Z. Liu, J. Mao, J. Zeng, J. Li, Q. Lin, J. Liu, J. Zhuge, and Z. Liang, "ProvGuard: Detecting SDN Control Policy Manipulation via Contextual Semantics of Provenance Graphs," in Proc. Network and Distributed System Security Symposium (NDSS), 2025.
 
 ## Why this lab exists
