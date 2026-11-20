@@ -2,6 +2,17 @@
 
 A small, reproducible software-defined networking (SDN) lab that stages two control-plane attacks and detects them. Built to work hands-on with the ideas in the ProvGuard paper (Liu, Mao et al., NDSS 2025) on detecting SDN control-policy manipulation via provenance graphs.
 
+## What this lab does, in plain terms
+
+In a software-defined network (SDN), one central program, the controller, decides how every switch forwards traffic. It does this from its own picture of the network: which switches are linked, where each host is plugged in, and which access rules apply. If an attacker can make that picture wrong, the controller makes the wrong decisions for the whole network.
+
+This lab builds a small SDN in a virtual machine: the Floodlight controller, two switches and three hosts. It then runs two attacks that corrupt the controller's picture:
+
+1. **Attack A, ACL bypass.** A rule blocks host h1 from reaching h2. The attacker moves h1 to a different switch, and the controller lets the blocked traffic through.
+2. **Attack B, link fabrication.** Host h3, plugged into both switches, relays the controller's own discovery messages. The controller then believes there is a cable between the switches that does not exist.
+
+A detector then reads the controller's state and flags both attacks. Version 2 asks the forensic question that follows: can the record of what happened be trusted? It stores every change in a tamper-evident log, has the detector check that log before using it, and then tries four ways of tampering with the evidence to show which ones are caught.
+
 ## Result at a glance
 
 Both attacks were reproduced in an isolated VM and flagged by the detector:
@@ -32,7 +43,9 @@ ProvGuard reasons about SDN security by building provenance graphs — tracking 
 - `attacks/attack_a_acl_bypass.sh` — Access-control bypass via host migration
 - `attacks/attack_b_link_fabrication.sh` — Link-fabrication attack
 - `detector/detector.py` — Detects the attacks from control-plane state
-- `evidence/` — raw captures and detection results
+- `detector/replay.py` — v2: verifies the event log, then replays it through the same two checks
+- `provlog/` — v2: event logger, checkpoint, verifier, and the tamper-test scripts
+- `evidence/` — raw captures and detection results (`evidence/v2/` for the v2 logs and tamper tests)
 
 ## The attacks
 
