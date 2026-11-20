@@ -7,8 +7,9 @@ A small, reproducible software-defined networking (SDN) lab that stages two cont
 Both attacks were reproduced in an isolated VM and flagged by the detector:
 - Attack A (ACL bypass via host migration): detected, 22 Oct 2026
 - Attack B (link fabrication): detected, 22 Oct 2026
+- v2, 20 Nov 2026: both attacks recorded in a tamper-evident, hash-chained log and detected on replay, with four tamper tests (see `evidence/v2/`)
 
-Raw captures and detector output are in `evidence/`. The detector is rule-based and does not build provenance graphs yet (see Known limitations). A provenance logger and graph is the next stage.
+Raw captures and detector output are in `evidence/`. The detector is rule-based and does not build provenance graphs yet (see Known limitations). v2 adds a tamper-evident event log (see below); a provenance graph is the next stage.
 
 Citation: Z. Liu, J. Mao, J. Zeng, J. Li, Q. Lin, J. Liu, J. Zhuge, and Z. Liang, "ProvGuard: Detecting SDN Control Policy Manipulation via Contextual Semantics of Provenance Graphs," in Proc. Network and Distributed System Security Symposium (NDSS), 2025.
 
