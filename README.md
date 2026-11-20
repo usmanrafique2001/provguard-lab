@@ -60,7 +60,7 @@ Injects a fabricated link into the controller's view of the topology, the class 
 > h3 bash attacks/attack_b_link_fabrication.sh
 > ```
 
-## Detection
+## Detection (v1)
 
 `detector/detector.py` inspects control-plane state and flags the anomalies produced by the attacks above. Results are captured in `evidence/detection_results.txt`.
 
@@ -76,7 +76,10 @@ Before running the attacks, run a benign baseline: migrate a host between switch
 3. Run the attack script(s) under `attacks/` (Attack B inside the `h3` namespace — see note).
 4. Run the detector and compare against the captures in `evidence/`.
 
-## Known limitations
+## Known limitations (v1)
+
+These apply to the v1 live detector. For v2, see "Limits" in the v2 section below.
+
 
 - The "no drop flow" check inspects the Floodlight flow JSON for the string `drop`. Floodlight represents a drop as a flow entry with **empty actions**, not an explicit `drop` keyword — so this check effectively succeeds because the deny flow is *absent*, not because it matched `drop`. As a result it can misfire on a legitimate host move and should be treated as a heuristic, not a definitive signal.
 - A more robust version would inspect the flow's action set directly (empty actions = drop) and correlate it with the provenance of the host-location change, closer to ProvGuard's own approach.
@@ -119,6 +122,8 @@ Tamper tests (`provlog/tamper_tests.sh`, output in `evidence/v2/tamper_tests.txt
 - The logger runs on the controller's machine, so a root attacker could stop it, or log false state from the start. The log proves the record hasn't changed since it was written, not that it was true.
 - The log records state snapshots, not which application or packet caused a change. Replay therefore skips v1's drop-flow check and reports a POSSIBLE bypass.
 - In this topology s1 and s2 have no real link, so h1 cannot reach h2 before the move even without the ACL. The ping before the move does not prove the rule works; the evidence is the ping succeeding after the move while the DENY rule is still listed.
+- The logger polls every 2 seconds, so a change that appears and reverts between two polls is never recorded.
+- The key that signed the published evidence logs is in `evidence/v2/demo.key`, so anyone can check them. It also means anyone can re-sign them (tamper test 4), so for the published logs it is the checkpoints that show they have not been rewritten. The key is retired; new runs use a fresh private `provlog/log.key`.
 - Next step: build a small provenance graph from these entries, linking each state change to its cause.
 
 ### Reproducing v2
@@ -127,4 +132,4 @@ Floodlight 1.2 drops Open vSwitch 2.13 switches unless they use OpenFlow 1.3:
 
     sudo mn --custom topology/linkfab_topo.py --topo linkfab --controller=remote,ip=127.0.0.1,port=6653 --switch ovsk,protocols=OpenFlow13
 
-Create a key with `python3 -c "import secrets; print(secrets.token_hex(32))" > provlog/log.key`, run `python3 logger.py events.jsonl` from `provlog/`, run an attack, and stop the logger. Still in `provlog/`, run `python3 anchor.py events.jsonl > anchors.jsonl`. Then, from the repo root, run `python3 detector/replay.py provlog/events.jsonl provlog/anchors.jsonl`. To repeat the tamper tests, run `bash provlog/tamper_tests.sh`.
+Create a key with `python3 -c "import secrets; print(secrets.token_hex(32))" > provlog/log.key`, run `python3 logger.py events.jsonl` from `provlog/`, run an attack, and stop the logger. Still in `provlog/`, run `python3 anchor.py events.jsonl > anchors.jsonl`. Then, from the repo root, run `python3 detector/replay.py provlog/events.jsonl provlog/anchors.jsonl`. To repeat the tamper tests on the published evidence, run `bash provlog/tamper_tests.sh` (it uses `evidence/v2/demo.key`). To check one published log yourself: `PROVLOG_KEY=evidence/v2/demo.key python3 detector/replay.py evidence/v2/events_attackA.jsonl evidence/v2/anchors_attackA.jsonl`.

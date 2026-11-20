@@ -39,7 +39,7 @@ def verify(log_path, key, anchors_path=None):
     return problems
 
 if __name__ == "__main__":
-    key = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "log.key"), "rb").read().strip()
+    key = open(os.environ.get("PROVLOG_KEY", os.path.join(os.path.dirname(os.path.abspath(__file__)), "log.key")), "rb").read().strip()
     found = verify(sys.argv[1], key, sys.argv[2] if len(sys.argv) > 2 else None)
     print("\n".join(found) if found else "OK: log verified")
     sys.exit(1 if found else 0)

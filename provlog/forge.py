@@ -2,7 +2,7 @@
 """Tamper test 4: an attacker WITH the key rewrites one entry and re-signs the rest.
 Usage: forge.py IN.jsonl OUT.jsonl SEQ OLD NEW"""
 import hashlib, hmac, json, os, sys
-KEY = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "log.key"), "rb").read().strip()
+KEY = open(os.environ.get("PROVLOG_KEY", os.path.join(os.path.dirname(os.path.abspath(__file__)), "log.key")), "rb").read().strip()
 canon = lambda o: json.dumps(o, sort_keys=True, separators=(",", ":"))
 src, dst, seq, old, new = sys.argv[1], sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5]
 entries = [json.loads(l) for l in open(src) if l.strip()]

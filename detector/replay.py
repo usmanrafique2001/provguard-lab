@@ -77,6 +77,6 @@ def replay(log_path, key, anchors_path=None):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit("usage: replay.py EVENTS.jsonl [ANCHORS.jsonl]")
-    key = open(os.path.join(PROVLOG, "log.key"), "rb").read().strip()
+    key = open(os.environ.get("PROVLOG_KEY", os.path.join(PROVLOG, "log.key")), "rb").read().strip()
     findings, problems = replay(sys.argv[1], key, sys.argv[2] if len(sys.argv) > 2 else None)
     sys.exit(2 if problems else 0)

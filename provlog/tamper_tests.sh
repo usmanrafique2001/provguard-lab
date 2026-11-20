@@ -3,6 +3,8 @@
 cd "$(dirname "$0")/.."
 L=evidence/v2/events_attackA.jsonl
 A=evidence/v2/anchors_attackA.jsonl
+# The evidence logs were signed with this lab-only key, published so anyone can check them.
+export PROVLOG_KEY=evidence/v2/demo.key
 S1=00:00:00:00:00:00:00:01; S2=00:00:00:00:00:00:00:02
 T=$(mktemp -d)
 LAST=$(( $(grep -c . $L) - 1 ))
