@@ -70,7 +70,8 @@ Before running the attacks, run a benign baseline: migrate a host between switch
 
 ## Reproducing
 
-1. Start Floodlight and bring up the relevant Mininet topology.
+1. Start Floodlight, then bring up the topology with the switches on OpenFlow 1.3 (Floodlight 1.2 drops Open vSwitch 2.13 switches otherwise):
+   `sudo mn --custom topology/linkfab_topo.py --topo linkfab --controller=remote,ip=127.0.0.1,port=6653 --switch ovsk,protocols=OpenFlow13`
 2. Run the benign baseline above and confirm the detector stays silent.
 3. Run the attack script(s) under `attacks/` (Attack B inside the `h3` namespace — see note).
 4. Run the detector and compare against the captures in `evidence/`.
@@ -114,9 +115,10 @@ Tamper tests (`provlog/tamper_tests.sh`, output in `evidence/v2/tamper_tests.txt
 ### Limits
 
 - Tamper-evident, not tamper-proof: the log shows that it changed, not what it said before.
-- Checkpoints only help if they are stored where the attacker can't reach. In this lab they were copied off the VM by hand.
+- Checkpoints only help if they are stored where the attacker can't reach. In this lab they stayed on the same VM as the log, so the tests show what a checkpoint catches, not a secure place to keep one.
 - The logger runs on the controller's machine, so a root attacker could stop it, or log false state from the start. The log proves the record hasn't changed since it was written, not that it was true.
 - The log records state snapshots, not which application or packet caused a change. Replay therefore skips v1's drop-flow check and reports a POSSIBLE bypass.
+- In this topology s1 and s2 have no real link, so h1 cannot reach h2 before the move even without the ACL. The ping before the move does not prove the rule works; the evidence is the ping succeeding after the move while the DENY rule is still listed.
 - Next step: build a small provenance graph from these entries, linking each state change to its cause.
 
 ### Reproducing v2
@@ -125,4 +127,4 @@ Floodlight 1.2 drops Open vSwitch 2.13 switches unless they use OpenFlow 1.3:
 
     sudo mn --custom topology/linkfab_topo.py --topo linkfab --controller=remote,ip=127.0.0.1,port=6653 --switch ovsk,protocols=OpenFlow13
 
-Create a key with `python3 -c "import secrets; print(secrets.token_hex(32))" > provlog/log.key`, run `python3 logger.py events.jsonl` from `provlog/`, run an attack, then `python3 anchor.py events.jsonl > anchors.jsonl` and `python3 detector/replay.py provlog/events.jsonl provlog/anchors.jsonl`.
+Create a key with `python3 -c "import secrets; print(secrets.token_hex(32))" > provlog/log.key`, run `python3 logger.py events.jsonl` from `provlog/`, run an attack, and stop the logger. Still in `provlog/`, run `python3 anchor.py events.jsonl > anchors.jsonl`. Then, from the repo root, run `python3 detector/replay.py provlog/events.jsonl provlog/anchors.jsonl`. To repeat the tamper tests, run `bash provlog/tamper_tests.sh`.
