@@ -72,3 +72,43 @@ Before running the attacks, run a benign baseline: migrate a host between switch
 - Evidence files are the raw captures from live runs on the VM.
 
 Author: Usman Rafique
+
+## v2: tamper-evident event log (Nov 2026)
+
+v1's detector trusted whatever the controller reported at the moment it polled. v2 records control-plane state in a log that shows whether it has been altered, and the detector verifies that log before trusting it.
+
+- `provlog/logger.py` polls Floodlight (links, devices, ACL) and appends each change to a hash chain. Each entry stores the previous entry's hash and is signed with HMAC-SHA256 using a key kept out of the repo.
+- `provlog/anchor.py` takes a checkpoint (entry count + newest hash) to store off the VM.
+- `provlog/verify.py` checks the chain and the checkpoints.
+- `detector/replay.py` verifies the log, then replays it and runs v1's two checks. If verification fails, every finding is marked UNTRUSTED.
+
+### Results
+
+Both attacks were recorded and detected on replay of a verified log (`evidence/v2/`):
+- Attack B (link fabrication): caught at seq 5. Both ends of the fabricated link were former host ports, and the MAC of h3's s2-side interface appeared at host ports on both switches.
+- Attack A (ACL bypass): caught at seq 5. h1 moved s1 -> s2 while DENY 10.0.0.1 -> 10.0.0.2 was active, and h1 then reached h2 (4/4 replies).
+
+Tamper tests (`provlog/tamper_tests.sh`, output in `evidence/v2/tamper_tests.txt`):
+
+| Test | Chain only | With checkpoint |
+| --- | --- | --- |
+| 1. Edit an entry | Caught | Caught |
+| 2. Delete a middle entry | Caught | Caught |
+| 3. Cut off the end | Missed | Caught |
+| 4. Rewrite with the key | Missed | Caught |
+
+### Limits
+
+- Tamper-evident, not tamper-proof: the log shows that it changed, not what it said before.
+- Checkpoints only help if they are stored where the attacker can't reach. In this lab they were copied off the VM by hand.
+- The logger runs on the controller's machine, so a root attacker could stop it, or log false state from the start. The log proves the record hasn't changed since it was written, not that it was true.
+- The log records state snapshots, not which application or packet caused a change. Replay therefore skips v1's drop-flow check and reports a POSSIBLE bypass.
+- Next step: build a small provenance graph from these entries, linking each state change to its cause.
+
+### Reproducing v2
+
+Floodlight 1.2 drops Open vSwitch 2.13 switches unless they use OpenFlow 1.3:
+
+    sudo mn --custom topology/linkfab_topo.py --topo linkfab --controller=remote,ip=127.0.0.1,port=6653 --switch ovsk,protocols=OpenFlow13
+
+Create a key with `python3 -c "import secrets; print(secrets.token_hex(32))" > provlog/log.key`, run `python3 logger.py events.jsonl` from `provlog/`, run an attack, then `python3 anchor.py events.jsonl > anchors.jsonl` and `python3 detector/replay.py provlog/events.jsonl provlog/anchors.jsonl`.
