@@ -1,0 +1,47 @@
+### Original log
+[*] log verified against checkpoints
+
+[ALERT] POSSIBLE ACL BYPASS (seq 5, 2026-11-20 20:45:29 UTC)
+  host 10.0.0.1 moved 00:00:00:00:00:00:00:01 -> 00:00:00:00:00:00:00:02 while DENY 10.0.0.1->10.0.0.2 was active.
+
+[*] 1 finding(s)
+
+### Test 1: edit the incriminating entry (seq 5: h1 back on s1)
+[!] LOG FAILED VERIFICATION - findings below cannot be trusted:
+    line 6 (seq 5): entry altered
+
+[*] 0 finding(s)
+
+### Test 2: delete a middle entry (line 3)
+[!] LOG FAILED VERIFICATION - findings below cannot be trusted:
+    line 3: chain broken (entry removed, inserted or reordered)
+    line 3: expected seq 2, found 3
+    checkpoint at 2026-11-20T20:47:39Z: log has 5 entries, checkpoint says 6 (truncated)
+
+[UNTRUSTED ALERT] POSSIBLE ACL BYPASS (seq 5, 2026-11-20 20:45:29 UTC)
+  host 10.0.0.1 moved 00:00:00:00:00:00:00:01 -> 00:00:00:00:00:00:00:02 while DENY 10.0.0.1->10.0.0.2 was active.
+
+[*] 1 finding(s)
+
+### Test 3: cut off the last entry
+-- chain only:
+[*] log verified
+
+[*] 0 finding(s)
+-- with checkpoint:
+[!] LOG FAILED VERIFICATION - findings below cannot be trusted:
+    checkpoint at 2026-11-20T20:47:39Z: log has 5 entries, checkpoint says 6 (truncated)
+
+[*] 0 finding(s)
+
+### Test 4: attacker with the key rewrites seq 5 and re-signs the chain
+forged seq 5 and re-signed 6 entries -> /tmp/tmp.VFKMdPCBPO/t4.jsonl
+-- chain only:
+[*] log verified
+
+[*] 0 finding(s)
+-- with checkpoint:
+[!] LOG FAILED VERIFICATION - findings below cannot be trusted:
+    checkpoint at 2026-11-20T20:47:39Z: entry 5 does not match (history rewritten)
+
+[*] 0 finding(s)
