@@ -1,0 +1,6 @@
+[*] log verified against checkpoints
+
+[ALERT] POSSIBLE ACL BYPASS (seq 5, 2026-11-20 20:45:29 UTC)
+  host 10.0.0.1 moved 00:00:00:00:00:00:00:01 -> 00:00:00:00:00:00:00:02 while DENY 10.0.0.1->10.0.0.2 was active.
+
+[*] 1 finding(s)

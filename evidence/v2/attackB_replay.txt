@@ -1,0 +1,11 @@
+[*] log verified against checkpoints
+
+[ALERT] LINK FABRICATION (seq 5, 2026-11-20 20:25:30 UTC)
+  switch 00:00:00:00:00:00:00:01 port 2 was a HOST attachment (b6:37:aa:6f:9f:db)
+  but now appears as a switch-to-switch LINK endpoint -> LLDP relay suspected.
+
+[ALERT] LINK FABRICATION (seq 5, 2026-11-20 20:25:30 UTC)
+  switch 00:00:00:00:00:00:00:02 port 2 was a HOST attachment (b6:37:aa:6f:9f:db)
+  but now appears as a switch-to-switch LINK endpoint -> LLDP relay suspected.
+
+[*] 2 finding(s)

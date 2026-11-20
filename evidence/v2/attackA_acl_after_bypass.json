@@ -1,0 +1,1 @@
+[{"id":1,"nw_src":"10.0.0.1/32","nw_dst":"10.0.0.2/32","nw_src_prefix":167772161,"nw_src_maskbits":32,"nw_dst_prefix":167772162,"nw_dst_maskbits":32,"nw_proto":0,"tp_dst":0,"action":"DENY"}]
